@@ -352,7 +352,7 @@ fun HomeScreen(
                 // Unified Task Grid
                 val filteredTasksByCategories: Map<String, List<Task>> = remember(uiState.tasksByCategory) {
                   uiState.tasksByCategory.mapValues { (_, tasks) ->
-                    tasks.filter { it.id == BuiltInTaskId.LLM_CHAT }
+                    tasks.filter { it.id == BuiltInTaskId.LLM_CHAT || it.id == BuiltInTaskId.LLM_TINY_GARDEN }
                   }.filterValues { it.isNotEmpty() }
                 }
                 val filteredCategories: List<CategoryInfo> = remember(sortedCategories) {
