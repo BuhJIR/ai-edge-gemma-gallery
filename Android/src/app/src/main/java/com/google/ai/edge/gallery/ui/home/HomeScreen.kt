@@ -290,7 +290,7 @@ fun HomeScreen(
                 }
             ) {
               GalleryTopAppBar(
-                title = "PROJ☆BLUE",
+                title = "PROJ BLUE GARDEN",
                 leftAction =
                   AppBarAction(
                     actionType = AppBarActionType.MENU,
@@ -322,7 +322,7 @@ fun HomeScreen(
                   horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                   Text(
-                    text = "PROJ☆BLUE",
+                    text = "PROJ BLUE",
                     style = MaterialTheme.typography.headlineLarge.copy(
                       fontWeight = FontWeight.ExtraBold,
                       letterSpacing = 6.sp,
@@ -330,7 +330,7 @@ fun HomeScreen(
                     )
                   )
                   Text(
-                    text = "NEURAL EDGE INTERFACE",
+                    text = "GARDEN INTERFACE",
                     style = MaterialTheme.typography.labelSmall.copy(
                       letterSpacing = 2.sp,
                       color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)

@@ -24,12 +24,12 @@ import androidx.compose.ui.graphics.Color
 // Cyber adds Glass (translucency) and subtle Neon Cyan glitches.
 // ==============================================================================
 
-val primaryLight = Color(0xFFFF003C) // Blood Red
+val primaryLight = Color(0xFF8A0303) // Dark Gothic Blood Red
 val onPrimaryLight = Color(0xFF000000)
 val primaryContainerLight = Color(0x66FF003C) // Glassy Red
 val onPrimaryContainerLight = Color(0xFFFFFFFF)
 
-val secondaryLight = Color(0xFF00F0FF) // Neon Cyan Glitch
+val secondaryLight = Color(0xFF004DFF) // Deep Spirit Blue
 val onSecondaryLight = Color(0xFF000000)
 val secondaryContainerLight = Color(0x3300F0FF) // Glassy Cyan
 val onSecondaryContainerLight = Color(0xFF00F0FF)
@@ -44,7 +44,7 @@ val onErrorLight = Color(0xFFFFFFFF)
 val errorContainerLight = Color(0xFF330000)
 val onErrorContainerLight = Color(0xFFFF4444)
 
-val backgroundLight = Color(0xFF020202) // Abyss Black
+val backgroundLight = Color(0xFF000000) // True Abyss Black
 val onBackgroundLight = Color(0xFFF0F0F0) // Bone White
 val surfaceLight = Color(0xAA0A0A0A) // Glass Black
 val onSurfaceLight = Color(0xFFE0E0E0)

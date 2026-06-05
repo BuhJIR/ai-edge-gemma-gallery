@@ -146,7 +146,7 @@ val LocalCustomColors = staticCompositionLocalOf { CustomColors() }
 
 val lightCustomColors =
   CustomColors(
-    appTitleGradientColors = listOf(Color(0xFF00F0FF), Color(0xFFFF003C)),
+    appTitleGradientColors = listOf(Color(0xFF004DFF), Color(0xFF8A0303)),
     tabHeaderBgColor = Color(0xFFFF003C),
     taskCardBgColor = Color(0xAA050505),
     taskBgColors =
