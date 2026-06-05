@@ -360,10 +360,8 @@ fun DownloadAndTryButton(
                 model.localFileRelativeDirPathOverride.isEmpty()
             ) {
               downloadButtonBackgroundColor
-            } else if (task != null) {
-              getTaskBgGradientColors(task = task)[1]
             } else {
-              MaterialTheme.colorScheme.primary
+              Color(0xFF1A0A00)
             }
         ),
       contentPadding = PaddingValues(horizontal = 12.dp),
@@ -386,28 +384,23 @@ fun DownloadAndTryButton(
     ) {
       val textColor =
         if (!enabled) {
-          // Define the color for disabled button.
           MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
         } else if (!downloadSucceeded && model.localFileRelativeDirPathOverride.isEmpty()) {
           MaterialTheme.colorScheme.onSurface
-        } else if (task != null) {
-          Color.White
         } else {
-          MaterialTheme.colorScheme.onPrimary
+          Color(0xFFD4A017)
         }
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
       ) {
-        Icon(
-          if (needToDownloadFirst) {
-            Icons.Outlined.FileDownload
-          } else {
-            Icons.AutoMirrored.Rounded.ArrowForward
-          },
-          contentDescription = null,
-          tint = textColor,
-        )
+        if (needToDownloadFirst) {
+          Icon(
+            Icons.Outlined.FileDownload,
+            contentDescription = null,
+            tint = textColor,
+          )
+        }
 
         if (!compact) {
           if (needToDownloadFirst) {
@@ -420,10 +413,13 @@ fun DownloadAndTryButton(
             Text(
               stringResource(R.string.try_it),
               color = textColor,
-              style = MaterialTheme.typography.titleMedium,
+              style = MaterialTheme.typography.titleMedium.copy(
+                letterSpacing = 1.5.sp,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+              ),
               maxLines = 1,
               autoSize =
-                TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 16.sp, stepSize = 1.sp),
+                TextAutoSize.StepBased(minFontSize = 8.sp, maxFontSize = 14.sp, stepSize = 1.sp),
             )
           }
         }
