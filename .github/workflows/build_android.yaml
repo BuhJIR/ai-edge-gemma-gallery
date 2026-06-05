@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ai-edge-gallery-debug
-          path: "**/*.apk"
+          path: Android/src/app/build/outputs/apk/debug/*.apk
