@@ -348,14 +348,23 @@ fun HomeScreen(
                 }
 
                 // Unified Task Grid
-                val pagerState = rememberPagerState(pageCount = { sortedCategories.size })
+                val filteredTasksByCategories = remember(uiState.tasksByCategory) {
+                  uiState.tasksByCategory.mapValues { (_, tasks) ->
+                    tasks.filter { it.id == BuiltInTaskId.LLM_CHAT }
+                  }.filterValues { it.isNotEmpty() }
+                }
+                val filteredCategories = remember(sortedCategories) {
+                  sortedCategories.filter { filteredTasksByCategories.containsKey(it.id) }
+                }
+
+                val pagerState = rememberPagerState(pageCount = { filteredCategories.size })
                 LaunchedEffect(pagerState.settledPage) {
                   selectedCategoryIndex = pagerState.settledPage
                 }
                 
-                if (sortedCategories.size > 1) {
+                if (filteredCategories.size > 1) {
                   CategoryTabHeader(
-                    sortedCategories = sortedCategories,
+                    sortedCategories = filteredCategories,
                     selectedIndex = selectedCategoryIndex,
                     enableAnimation = enableAnimation,
                     onCategorySelected = { index ->
@@ -368,12 +377,12 @@ fun HomeScreen(
                 TaskList(
                   modelManagerViewModel = modelManagerViewModel,
                   pagerState = pagerState,
-                  sortedCategories = sortedCategories,
-                  tasksByCategories = uiState.tasksByCategory,
+                  sortedCategories = filteredCategories,
+                  tasksByCategories = filteredTasksByCategories,
                   enableAnimation = enableAnimation,
                   navigateToTaskScreen = navigateToTaskScreen,
                   gm4 = false, // Disable promo layout
-                  grid = true,
+                  grid = false, // Single tile looks better without grid
                 )
 
                 Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 40.dp))
