@@ -129,8 +129,6 @@ fun GlobalModelManager(
   val snackbarHostState = remember { SnackbarHostState() }
   val modelItemExpandedStates = remember { mutableStateMapOf<String, Boolean>() }
 
-  val promoId = "gm4_banner"
-  var showPromo by remember { mutableStateOf(false) }
   LaunchedEffect(Unit) {
     showPromo = !viewModel.dataStoreRepository.hasViewedPromo(promoId = promoId)
   }
