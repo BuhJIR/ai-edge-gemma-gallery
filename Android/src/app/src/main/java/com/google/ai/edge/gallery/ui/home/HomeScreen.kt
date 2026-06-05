@@ -159,7 +159,9 @@ fun HomeScreen(
   gm4: Boolean = false,
 ) {
   val uiState by modelManagerViewModel.uiState.collectAsState()
-  val sortedCategories = remember(uiState.categories) { uiState.categories.sortedBy { it.id } }
+  val sortedCategories = remember(uiState.tasks) {
+    uiState.tasks.map { it.category }.distinctBy { it.id }.sortedBy { it.id }
+  }
   var selectedCategoryIndex by remember { mutableIntStateOf(0) }
   var showSettingsDialog by remember { mutableStateOf(false) }
   var showTosDialog by remember { mutableStateOf(!tosViewModel.getIsTosAccepted()) }
@@ -348,12 +350,12 @@ fun HomeScreen(
                 }
 
                 // Unified Task Grid
-                val filteredTasksByCategories = remember(uiState.tasksByCategory) {
+                val filteredTasksByCategories: Map<String, List<Task>> = remember(uiState.tasksByCategory) {
                   uiState.tasksByCategory.mapValues { (_, tasks) ->
                     tasks.filter { it.id == BuiltInTaskId.LLM_CHAT }
                   }.filterValues { it.isNotEmpty() }
                 }
-                val filteredCategories = remember(sortedCategories) {
+                val filteredCategories: List<CategoryInfo> = remember(sortedCategories) {
                   sortedCategories.filter { filteredTasksByCategories.containsKey(it.id) }
                 }
 
