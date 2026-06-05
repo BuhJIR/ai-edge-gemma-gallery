@@ -275,7 +275,7 @@ fun HomeScreen(
                 }
             ) {
               GalleryTopAppBar(
-                title = stringResource(HomeScreenDestination.titleRes),
+                title = "PROJ☆BLUE",
                 leftAction =
                   AppBarAction(
                     actionType = AppBarActionType.MENU,
@@ -299,55 +299,71 @@ fun HomeScreen(
                   .verticalScroll(rememberScrollState()),
             ) {
               Column(modifier = Modifier.fillMaxWidth()) {
-                // Cyber Gothic Header
+                // PROJ☆BLUE Header
                 Column(
                   modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 32.dp)
+                    .padding(horizontal = 24.dp, vertical = 40.dp)
                     .fillMaxWidth(),
                   horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                   Text(
-                    text = "CYBER GALLERY",
+                    text = "PROJ☆BLUE",
                     style = MaterialTheme.typography.headlineLarge.copy(
                       fontWeight = FontWeight.ExtraBold,
-                      letterSpacing = 4.sp,
+                      letterSpacing = 6.sp,
                       color = MaterialTheme.colorScheme.primary
                     )
                   )
-                  Spacer(modifier = Modifier.height(8.dp))
+                  Text(
+                    text = "NEURAL EDGE INTERFACE",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                      letterSpacing = 2.sp,
+                      color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    )
+                  )
+                  Spacer(modifier = Modifier.height(16.dp))
                   Box(
                     modifier = Modifier
-                      .height(2.dp)
-                      .fillMaxWidth(0.6f)
+                      .height(1.dp)
+                      .fillMaxWidth(0.3f)
                       .background(
                         Brush.horizontalGradient(
-                          listOf(Color.Transparent, MaterialTheme.colorScheme.secondary, Color.Transparent)
+                          listOf(Color.Transparent, MaterialTheme.colorScheme.primary, Color.Transparent)
                         )
                       )
                   )
                 }
 
-                // Simplified Task List
-                val tasks = uiState.tasks
-                Column(
-                  modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth(),
-                  verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                  tasks.forEachIndexed { index, task ->
-                    TaskCard(
-                      task = task,
-                      index = index,
-                      animate = enableAnimation,
-                      onClick = { navigateToTaskScreen(task) },
-                      modifier = Modifier.fillMaxWidth(),
-                      square = false
-                    )
-                  }
+                // Unified Task Grid
+                val pagerState = rememberPagerState(pageCount = { sortedCategories.size })
+                LaunchedEffect(pagerState.settledPage) {
+                  selectedCategoryIndex = pagerState.settledPage
+                }
+                
+                if (sortedCategories.size > 1) {
+                  CategoryTabHeader(
+                    sortedCategories = sortedCategories,
+                    selectedIndex = selectedCategoryIndex,
+                    enableAnimation = enableAnimation,
+                    onCategorySelected = { index ->
+                      selectedCategoryIndex = index
+                      scope.launch { pagerState.animateScrollToPage(page = index) }
+                    },
+                  )
                 }
 
-                Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 32.dp))
+                TaskList(
+                  modelManagerViewModel = modelManagerViewModel,
+                  pagerState = pagerState,
+                  sortedCategories = sortedCategories,
+                  tasksByCategories = uiState.tasksByCategory,
+                  enableAnimation = enableAnimation,
+                  navigateToTaskScreen = navigateToTaskScreen,
+                  gm4 = false, // Disable promo layout
+                  grid = true,
+                )
+
+                Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding() + 40.dp))
               }
             }
 
