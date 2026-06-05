@@ -36,7 +36,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
@@ -52,24 +51,18 @@ import com.google.ai.edge.gallery.data.GalleryEvent
 import com.google.ai.edge.gallery.data.ModelDownloadStatusType
 import com.google.ai.edge.gallery.data.Task
 import com.google.ai.edge.gallery.firebaseAnalytics
-import com.google.ai.edge.gallery.ui.common.TextAndVoiceInput
-import com.google.ai.edge.gallery.ui.common.VoiceRecognizerOverlay
+import com.google.ai.edge.gallery.ui.common.getTaskBgGradientColors
+import com.google.ai.edge.gallery.ui.common.textandvoiceinput.TextAndVoiceInput
+import com.google.ai.edge.gallery.ui.common.textandvoiceinput.VoiceRecognizerOverlay
+import com.google.ai.edge.gallery.ui.common.textandvoiceinput.HoldToDictateViewModel
 import com.google.ai.edge.gallery.ui.common.chat.ChatMessageText
 import com.google.ai.edge.gallery.ui.common.chat.ChatMessageWarning
 import com.google.ai.edge.gallery.ui.common.chat.ChatSide
-import com.google.ai.edge.gallery.ui.llmchat.HoldToDictateViewModel
-import com.google.ai.edge.gallery.ui.llmchat.LlmChatModelHelper
 import com.google.ai.edge.gallery.ui.modelmanager.ModelManagerViewModel
 import com.google.ai.edge.gallery.ui.theme.customColors
-import com.google.ai.edge.gallery.ui.theme.getTaskBgGradientColors
-import com.google.ai.edge.litertlm.Contents
 import com.google.ai.edge.litertlm.ToolProvider
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
-
-private const val TAG = "AGTinyGarden"
-private const val ASSETS_BASE_URL = "https://appassets.androidplatform.net"
 
 /** The main screen for the Tiny Garden game. */
 @Composable
@@ -87,7 +80,6 @@ fun TinyGardenScreen(
   var recordAudioPermissionGranted by remember { mutableStateOf(false) }
   val context = LocalContext.current
 
-  // Permission request when recording audio clips.
   val recordAudioClipsPermissionLauncher =
     rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
       permissionGranted ->
@@ -97,14 +89,10 @@ fun TinyGardenScreen(
     }
 
   LaunchedEffect(Unit) {
-    // Check permission
     when (PackageManager.PERMISSION_GRANTED) {
-      // Already got permission. Call the lambda.
       ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) -> {
         recordAudioPermissionGranted = true
       }
-
-      // Otherwise, ask for permission
       else -> {
         recordAudioClipsPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
       }
@@ -127,37 +115,24 @@ fun TinyGardenScreen(
           setTopBarVisible = setTopBarVisible,
         )
 
-        // Resetting engine spinner.
-        Column() {
-          AnimatedVisibility(
-            uiState.resettingEngine,
-            enter = fadeIn() + scaleIn(initialScale = 0.9f),
-            exit = fadeOut() + scaleOut(targetScale = 0.9f),
+        if (uiState.resettingEngine) {
+          Box(
+            modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
+            contentAlignment = Alignment.Center,
           ) {
-            Box(
-              modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface),
-              contentAlignment = Alignment.Center,
+            Column(
+              verticalArrangement = Arrangement.spacedBy(8.dp),
+              horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-              Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-              ) {
-                CircularProgressIndicator(
-                  trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                  strokeWidth = 3.dp,
-                  modifier = Modifier.size(24.dp),
-                )
-                Text(
-                  stringResource(R.string.resetting_engine),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                  stringResource(R.string.reinitializing_description),
-                  color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                  style = MaterialTheme.typography.bodyMedium,
-                  modifier = Modifier.padding(top = 8.dp),
-                )
-              }
+              CircularProgressIndicator(
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                strokeWidth = 3.dp,
+                modifier = Modifier.size(24.dp),
+              )
+              Text(
+                stringResource(R.string.resetting_engine),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
             }
           }
         }
@@ -181,7 +156,6 @@ fun MainUi(
 ) {
   val modelManagerUiState by modelManagerViewModel.uiState.collectAsState()
   val model = modelManagerUiState.selectedModel
-  val initialModelConfigValues = remember(model) { model.configValues }
   val scope = rememberCoroutineScope()
   val uiState by viewModel.uiState.collectAsState()
   var clearTextTrigger by remember { mutableLongStateOf(0L) }
@@ -191,11 +165,11 @@ fun MainUi(
   var showErrorDialog by remember { mutableStateOf(false) }
   var errorDialogContent by remember { mutableStateOf("") }
   val snackbarHostState = remember { SnackbarHostState() }
-  val resources = LocalResources.current
   val context = LocalContext.current
 
   val taskColor = getTaskBgGradientColors(task = task)[1]
   val curDownloadStatus = modelManagerUiState.modelDownloadStatus[model.name]?.status
+  
   setAppBarControlsDisabled(
     curDownloadStatus == ModelDownloadStatusType.SUCCEEDED &&
       (!modelManagerUiState.isModelInitialized(model = model) || uiState.processing)
@@ -229,12 +203,11 @@ fun MainUi(
       viewModel.getCommand(
         model = model,
         instructionText = text,
-        onDone = { response ->
-          if (uiState.messages.last().side != ChatSide.AGENT) {
+        onDone = { _ ->
+          if (uiState.messages.isEmpty() || uiState.messages.last().side != ChatSide.AGENT) {
             viewModel.addMessage(message = ChatMessageWarning(content = noFunctionCallWarningMessage))
             scope.launch { snackbarHostState.showSnackbar(noFunctionCallSnackbarMessage, withDismissAction = true) }
           }
-          // Reset conversation logic omitted for simplicity in this prototype.
         },
         onError = { error ->
           errorDialogContent = error
@@ -252,11 +225,7 @@ fun MainUi(
   }
 
   if (!modelManagerUiState.isModelInitialized(model = model)) {
-    Row(
-      modifier = Modifier.fillMaxSize(),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Center,
-    ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
       CircularProgressIndicator(
         trackColor = MaterialTheme.colorScheme.surfaceVariant,
         strokeWidth = 3.dp,
@@ -270,18 +239,12 @@ fun MainUi(
             bottom = if (WindowInsets.ime.getBottom(LocalDensity.current) == 0) bottomPadding else 12.dp
           ).fillMaxSize()
       ) {
-        
-        // JRPG UI
         Column(modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp)) {
-          // Enemy Status
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-          ) {
+          Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Box(
               modifier = Modifier
-                .border(2.dp, Color.White, androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
-                .background(Brush.verticalGradient(listOf(Color(0xFF000080), Color(0xFF000040))), androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                .border(2.dp, Color.White, RoundedCornerShape(8.dp))
+                .background(Brush.verticalGradient(listOf(Color(0xFF000080), Color(0xFF000040))), RoundedCornerShape(8.dp))
                 .padding(16.dp)
             ) {
               Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -291,31 +254,22 @@ fun MainUi(
               }
             }
           }
-          
           Spacer(modifier = Modifier.weight(1f))
-          
-          // Battle Log (Dialog Box)
           Box(
             modifier = Modifier
               .fillMaxWidth()
-              .border(4.dp, Color.White, androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
-              .background(Brush.verticalGradient(listOf(Color(0xFF0000AA), Color(0xFF000033))), androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+              .border(4.dp, Color.White, RoundedCornerShape(8.dp))
+              .background(Brush.verticalGradient(listOf(Color(0xFF0000AA), Color(0xFF000033))), RoundedCornerShape(8.dp))
               .padding(16.dp)
           ) {
             Text(uiState.jrpgState.battleLog, color = Color.White, fontSize = 18.sp, lineHeight = 24.sp)
           }
-          
           Spacer(modifier = Modifier.height(16.dp))
-          
-          // Player Status
-          Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-          ) {
+          Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             Box(
               modifier = Modifier
-                .border(2.dp, Color.White, androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
-                .background(Brush.verticalGradient(listOf(Color(0xFF000080), Color(0xFF000040))), androidx.compose.foundation.shape.RoundedCornerShape(8.dp))
+                .border(2.dp, Color.White, RoundedCornerShape(8.dp))
+                .background(Brush.verticalGradient(listOf(Color(0xFF000080), Color(0xFF000040))), RoundedCornerShape(8.dp))
                 .padding(16.dp)
             ) {
               Column(horizontalAlignment = Alignment.End) {
@@ -328,7 +282,6 @@ fun MainUi(
           }
         }
 
-        // Text and voice input.
         Row(
           modifier = Modifier.fillMaxWidth().padding(top = 12.dp, bottom = 12.dp),
           verticalAlignment = Alignment.CenterVertically,
@@ -339,8 +292,8 @@ fun MainUi(
             processing = uiState.processing,
             holdToDictateViewModel = holdToDictateViewModel,
             modifier = Modifier.padding(start = 16.dp).weight(1f),
-            onDone = { text -> processInstructionText(text = text) },
-            onAmplitudeChanged = { curAmplitude = it },
+            onDone = { text: String -> processInstructionText(text = text) },
+            onAmplitudeChanged = { amp: Int -> curAmplitude = amp },
             clearTextTrigger = clearTextTrigger,
             defaultTextInputMode = true,
           )
@@ -440,4 +393,3 @@ fun MainUi(
     )
   }
 }
-
