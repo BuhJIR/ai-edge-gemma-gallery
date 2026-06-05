@@ -105,8 +105,8 @@ private val IMPORT_CONFIGS_LLM: List<Config> =
     LabelConfig(key = ConfigKeys.MODEL_TYPE),
     NumberSliderConfig(
       key = ConfigKeys.DEFAULT_MAX_TOKENS,
-      sliderMin = 100f,
-      sliderMax = 4096f,
+      sliderMin = 512f,
+      sliderMax = 8192f,
       defaultValue = DEFAULT_MAX_TOKEN.toFloat(),
       valueType = ValueType.INT,
     ),
