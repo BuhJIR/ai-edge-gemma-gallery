@@ -15,8 +15,12 @@
  */
 package com.google.ai.edge.gallery.customtasks.tinygarden
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -36,10 +40,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.google.ai.edge.gallery.R
 import com.google.ai.edge.gallery.data.GalleryEvent
@@ -435,15 +441,3 @@ fun MainUi(
   }
 }
 
-/** Returns the SHA-256 hash of the given string as a base64 encoded string. */
-private fun String.sha256(): String {
-  val inputBytes = this.toByteArray()
-  return try {
-    val sha256 = MessageDigest.getInstance("SHA-256")
-    val digest = sha256.digest(inputBytes)
-    BaseEncoding.base64().encode(digest)
-  } catch (e: Exception) {
-    e.printStackTrace()
-    ""
-  }
-}
