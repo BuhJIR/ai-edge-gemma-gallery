@@ -444,14 +444,14 @@ fun ChatPanel(
                   if (!message.disableBubbleShape && !isAgentResponseText) {
                     // Use a rounded rectangle clip for multi-image image message.
                     if (message is ChatMessageImage && message.bitmaps.size > 1) {
-                      messageBubbleModifier = messageBubbleModifier.clip(RoundedCornerShape(6.dp))
+                      messageBubbleModifier = messageBubbleModifier.clip(RoundedCornerShape(0.dp))
                     }
                     // For other messages, use a bubble shape to clip.
                     else {
                       messageBubbleModifier =
                         messageBubbleModifier.clip(
                           MessageBubbleShape(
-                            radius = bubbleBorderRadius,
+                            radius = 0.dp,
                             hardCornerAtLeftOrRight = hardCornerAtLeftOrRight,
                           )
                         )

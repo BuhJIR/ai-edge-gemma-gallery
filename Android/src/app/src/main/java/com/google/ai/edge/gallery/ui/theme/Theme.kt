@@ -146,7 +146,7 @@ val LocalCustomColors = staticCompositionLocalOf { CustomColors() }
 
 val lightCustomColors =
   CustomColors(
-    appTitleGradientColors = listOf(Color(0xFF004DFF), Color(0xFF8A0303)),
+    appTitleGradientColors = listOf(Color(0xFF004DFF), Color(0xFF8A0303), Color(0xFF000000)),
     tabHeaderBgColor = Color(0xFFFF003C),
     taskCardBgColor = Color(0xAA050505),
     taskBgColors =
@@ -172,8 +172,8 @@ val lightCustomColors =
       ),
     taskIconShapeBgColor = Color(0xFF000000),
     homeBottomGradient = listOf(Color(0x00000000), Color(0xFF000000)),
-    agentBubbleBgColor = Color(0x88111111),
-    userBubbleBgColor = Color(0x884A0011),
+    agentBubbleBgColor = Color(0xCC000040), // Dark Blue JRPG Dialog
+    userBubbleBgColor = Color(0xCC400000), // Dark Red JRPG Dialog
     linkColor = Color(0xFF00F0FF),
     successColor = Color(0xFF00FF41),
     recordButtonBgColor = Color(0xFFFF003C),

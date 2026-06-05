@@ -325,8 +325,13 @@ fun HomeScreen(
                     text = "PROJ BLUE",
                     style = MaterialTheme.typography.headlineLarge.copy(
                       fontWeight = FontWeight.ExtraBold,
-                      letterSpacing = 6.sp,
-                      color = MaterialTheme.colorScheme.primary
+                      letterSpacing = 8.sp,
+                      color = MaterialTheme.colorScheme.primary,
+                      shadow = androidx.compose.ui.graphics.Shadow(
+                        color = Color.Black,
+                        offset = androidx.compose.ui.geometry.Offset(4f, 4f),
+                        blurRadius = 8f
+                      )
                     )
                   )
                   Text(
@@ -672,10 +677,11 @@ private fun TaskCard(
   Card(
     modifier =
       modifier
-        .clip(RoundedCornerShape(24.dp))
+        .clip(RoundedCornerShape(0.dp))
         .clickable(onClick = onClick)
         .graphicsLayer { alpha = progress }
         .semantics { contentDescription = cbTask },
+    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
     colors =
       CardDefaults.cardColors(
         containerColor = MaterialTheme.customColors.taskCardBgColor

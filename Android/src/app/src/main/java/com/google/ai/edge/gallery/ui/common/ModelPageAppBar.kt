@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
 import com.google.ai.edge.gallery.R
 import com.google.ai.edge.gallery.data.BuiltInTaskId
 import com.google.ai.edge.gallery.data.ConfigKeys
@@ -108,7 +109,7 @@ fun ModelPageAppBar(
             modifier = Modifier.size(24.dp),
             contentDescription = null,
           )
-          Text(task.label, style = MaterialTheme.typography.titleMedium, color = tintColor)
+          Text(task.label, style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, letterSpacing = 1.sp), color = tintColor)
         }
 
         // Model chips pager.

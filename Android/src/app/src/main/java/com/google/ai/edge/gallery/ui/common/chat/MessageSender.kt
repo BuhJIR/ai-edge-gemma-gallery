@@ -34,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.google.ai.edge.gallery.R
 import com.google.ai.edge.gallery.ui.theme.bodySmallNarrow
 
@@ -72,7 +74,7 @@ fun MessageSender(message: ChatMessage, agentName: String = "", imageHistoryCurI
   ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
       // Sender label.
-      Text(userLabel, style = MaterialTheme.typography.titleSmall)
+      Text(userLabel, style = MaterialTheme.typography.titleSmall.copy(letterSpacing = 1.sp, fontWeight = FontWeight.Bold))
 
       when (message) {
         // Benchmark running status.
