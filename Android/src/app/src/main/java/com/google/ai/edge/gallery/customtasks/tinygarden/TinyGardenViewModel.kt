@@ -45,6 +45,17 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "AGTGViewModel"
 
+data class JrpgState(
+  val playerHp: Int = 100,
+  val playerMaxHp: Int = 100,
+  val playerMp: Int = 50,
+  val playerMaxMp: Int = 50,
+  val enemyName: String = "Goblin",
+  val enemyHp: Int = 50,
+  val enemyMaxHp: Int = 50,
+  val battleLog: String = "A wild Goblin appeared!"
+)
+
 /** The UI state of the task. */
 data class TinyGardenUiState(
   // Whether the app is processing the user input.
@@ -58,6 +69,8 @@ data class TinyGardenUiState(
 
   // The number of turns.
   val numTurns: Int = 0,
+
+  val jrpgState: JrpgState = JrpgState()
 )
 
 /** The ViewModel of the task screen. */
@@ -149,6 +162,23 @@ constructor(
     _uiState.update { uiState.value.copy(numTurns = uiState.value.numTurns + 1) }
   }
 
+  fun updateBattleLog(log: String) {
+    _uiState.update { 
+      uiState.value.copy(jrpgState = uiState.value.jrpgState.copy(battleLog = log)) 
+    }
+  }
+
+  fun applyDamage(target: String, amount: Int) {
+    _uiState.update { state ->
+      val currentJrpg = state.jrpgState
+      if (target.lowercase() == "player") {
+        state.copy(jrpgState = currentJrpg.copy(playerHp = maxOf(0, currentJrpg.playerHp - amount)))
+      } else {
+        state.copy(jrpgState = currentJrpg.copy(enemyHp = maxOf(0, currentJrpg.enemyHp - amount)))
+      }
+    }
+  }
+
   fun resetNumTurns() {
     _uiState.update { uiState.value.copy(numTurns = 0) }
   }
@@ -182,7 +212,11 @@ constructor(
                   ChatMessageWarning(content = context.getString(R.string.engin_reset_message))
               )
             },
-            systemInstruction = Contents.of(getTinyGardenSystemPrompt()),
+            systemInstruction = Contents.of(getTinyGardenSystemPrompt(
+              playerHp = uiState.value.jrpgState.playerHp,
+              enemyHp = uiState.value.jrpgState.enemyHp,
+              enemyName = uiState.value.jrpgState.enemyName
+            )),
             tools = tools,
             enableConversationConstrainedDecoding = true,
           )
@@ -193,10 +227,7 @@ constructor(
 
   fun resetConversation(
     model: Model,
-    tools: List<ToolProvider>,
-    prevSeed: String,
-    prevPlots: String,
-    prevAction: String,
+    tools: List<ToolProvider>
   ) {
     resetNumTurns()
 
@@ -204,9 +235,9 @@ constructor(
       _isResettingConversation.value = true
       val curSystemPrompt =
         getTinyGardenSystemPrompt(
-          prevSeed = prevSeed,
-          prevPlots = prevPlots,
-          prevAction = prevAction,
+          playerHp = uiState.value.jrpgState.playerHp,
+          enemyHp = uiState.value.jrpgState.enemyHp,
+          enemyName = uiState.value.jrpgState.enemyName
         )
       Log.d(TAG, "Current system prompt:\n$curSystemPrompt")
       LlmChatModelHelper.resetConversation(

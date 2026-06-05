@@ -20,85 +20,48 @@ import com.google.ai.edge.litertlm.Tool
 import com.google.ai.edge.litertlm.ToolParam
 import com.google.ai.edge.litertlm.ToolSet
 
-private const val TAG = "AGTGTools"
+private const val TAG = "AGJrpgTools"
 
-/** The items that can be used in the Tiny Garden game. */
-enum class TinyGardenItem(val label: String) {
-  SUNFLOWER(label = "sunflower"),
-  DAISY(label = "daisy"),
-  ROSE(label = "rose"),
-  SPECIAL(label = "secret"),
-  WATERING_CAN(label = "water"),
-  SCYTHE(label = "harvest"),
-}
+enum class JrpgAction { ATTACK, MAGIC, ITEM, ENEMY_ATTACK }
 
-/** A command to be sent to the Tiny Garden game. */
 data class TinyGardenCommand(
-  // This is 1-based.
-  val item: Int,
-  val plots: List<Int>,
+  val action: JrpgAction,
+  val target: String,
+  val value: String = "",
+  val damage: Int = 0,
   val ts: Long = System.currentTimeMillis(),
 )
 
-/**
- * A class that defines the tools available to the Tiny Garden game.
- *
- * Instructions:
- * https://github.com/google-ai-edge/LiteRT-LM/blob/main/kotlin/README.md#6-defining-and-using-tools
- */
 class TinyGardenTools(val onFunctionCalled: (command: TinyGardenCommand) -> Unit) : ToolSet {
 
-  /** Waters one or more garden plots. */
-  @Tool(description = "Water one or more garden plots.")
-  fun waterPlots(
-    @ToolParam(description = "The IDs of the plots to water.") plots: List<Int>
+  @Tool(description = "Perform a physical attack against a target.")
+  fun performAttack(
+    @ToolParam(description = "The target of the attack (e.g. 'Goblin').") target: String,
+    @ToolParam(description = "The amount of damage dealt (1-20).") damage: Int
   ): Map<String, Any> {
-    Log.d(TAG, "waterPlots. Plots=$plots")
-
-    onFunctionCalled(
-      TinyGardenCommand(item = TinyGardenItem.WATERING_CAN.ordinal + 1, plots = plots)
-    )
-
-    // Return a response object to the model confirming the action.
-    return mapOf("result" to "success", "plots" to plots)
+    Log.d(TAG, "performAttack: $target, dmg: $damage")
+    onFunctionCalled(TinyGardenCommand(action = JrpgAction.ATTACK, target = target, damage = damage))
+    return mapOf("result" to "success", "action" to "attack", "damage" to damage)
   }
 
-  /** Plants a seed in one or more garden plots. */
-  @Tool(description = "Plant a seed in one or more garden plots.")
-  fun plantSeed(
-    @ToolParam(description = "The name of the seed to plant.") seed: String,
-    @ToolParam(description = "The IDs of the plots to plant a seed in.") plots: List<Int>,
+  @Tool(description = "Cast a magic spell on a target.")
+  fun castMagic(
+    @ToolParam(description = "The spell name (e.g. 'Fire', 'Cure').") spell: String,
+    @ToolParam(description = "The target of the spell.") target: String,
+    @ToolParam(description = "The damage or healing amount (1-30).") effectAmount: Int
   ): Map<String, Any> {
-    Log.d(TAG, "plantSeed. seed: $seed, plots; $plots")
-
-    val itemId =
-      when (seed.lowercase()) {
-        "sunflower" -> TinyGardenItem.SUNFLOWER.ordinal
-        "daisy" -> TinyGardenItem.DAISY.ordinal
-        "rose" -> TinyGardenItem.ROSE.ordinal
-        "special",
-        "edge gallery",
-        "secret" -> TinyGardenItem.SPECIAL.ordinal
-        else -> -1
-      } + 1
-    if (itemId > 0) {
-      onFunctionCalled(TinyGardenCommand(item = itemId, plots = plots))
-    }
-
-    // Return a response object to the model confirming the action
-    return mapOf("result" to "success", "seed" to seed, "plots" to plots)
+    Log.d(TAG, "castMagic: $spell on $target, effect: $effectAmount")
+    onFunctionCalled(TinyGardenCommand(action = JrpgAction.MAGIC, target = target, value = spell, damage = effectAmount))
+    return mapOf("result" to "success", "action" to "magic", "spell" to spell, "effect" to effectAmount)
   }
 
-  /** Harvests one or more garden plots. */
-  @Tool(description = "Harvest one or more garden plots.")
-  fun harvestPlots(
-    @ToolParam(description = "The IDs of the plots to harvest.") plots: List<Int>
+  @Tool(description = "Execute an enemy counter-attack against the player. Must be used when the enemy fights back.")
+  fun enemyAttack(
+    @ToolParam(description = "The name of the enemy attacking.") enemyName: String,
+    @ToolParam(description = "The amount of damage dealt to the player (1-15).") damage: Int
   ): Map<String, Any> {
-    Log.d(TAG, "harvestPlots. Plots=$plots")
-
-    onFunctionCalled(TinyGardenCommand(item = TinyGardenItem.SCYTHE.ordinal + 1, plots = plots))
-
-    // Return a response object to the model confirming the action.
-    return mapOf("result" to "success", "plots" to plots)
+    Log.d(TAG, "enemyAttack: $enemyName, dmg: $damage")
+    onFunctionCalled(TinyGardenCommand(action = JrpgAction.ENEMY_ATTACK, target = "Player", value = enemyName, damage = damage))
+    return mapOf("result" to "success", "action" to "enemy_attack", "damage" to damage)
   }
 }
