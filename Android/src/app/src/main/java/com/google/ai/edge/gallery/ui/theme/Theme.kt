@@ -146,95 +146,51 @@ val LocalCustomColors = staticCompositionLocalOf { CustomColors() }
 
 val lightCustomColors =
   CustomColors(
-    appTitleGradientColors = listOf(Color(0xFFFF006E), Color(0xFF00F5FF)),
-    tabHeaderBgColor = Color(0xFF9D00FF),
-    taskCardBgColor = Color(0xFF121212),
+    appTitleGradientColors = listOf(Color(0xFF00F0FF), Color(0xFFFF003C)),
+    tabHeaderBgColor = Color(0xFFFF003C),
+    taskCardBgColor = Color(0xAA050505),
     taskBgColors =
       listOf(
-        Color(0xFF1A000A),
-        Color(0xFF001A1A),
-        Color(0xFF0A001A),
-        Color(0xFF001A05),
+        Color(0xFF110000),
+        Color(0xFF001111),
+        Color(0xFF110011),
+        Color(0xFF050505),
       ),
     taskBgGradientColors =
       listOf(
-        listOf(Color(0xFFFF006E), Color(0xFF800037)),
-        listOf(Color(0xFF00F5FF), Color(0xFF007A80)),
-        listOf(Color(0xFF9D00FF), Color(0xFF4E0080)),
-        listOf(Color(0xFF00FF41), Color(0xFF008020)),
+        listOf(Color(0xFFFF003C), Color(0xFF550011)),
+        listOf(Color(0xFF00F0FF), Color(0xFF003344)),
+        listOf(Color(0xFFFF00E6), Color(0xFF330033)),
+        listOf(Color(0xFFF0F0F0), Color(0xFF222222)),
       ),
     taskIconColors =
       listOf(
-        Color(0xFFFF006E),
-        Color(0xFF00F5FF),
-        Color(0xFF9D00FF),
-        Color(0xFF00FF41),
+        Color(0xFFFF003C),
+        Color(0xFF00F0FF),
+        Color(0xFFFF00E6),
+        Color(0xFFFFFFFF),
       ),
     taskIconShapeBgColor = Color(0xFF000000),
     homeBottomGradient = listOf(Color(0x00000000), Color(0xFF000000)),
-    agentBubbleBgColor = Color(0xFF1A1A1A),
-    userBubbleBgColor = Color(0xFF003333),
-    linkColor = Color(0xFF00F5FF),
+    agentBubbleBgColor = Color(0x88111111),
+    userBubbleBgColor = Color(0x884A0011),
+    linkColor = Color(0xFF00F0FF),
     successColor = Color(0xFF00FF41),
-    recordButtonBgColor = Color(0xFFFF006E),
-    waveFormBgColor = Color(0xFF333333),
-    modelInfoIconColor = Color(0xFF00F5FF),
-    warningContainerColor = Color(0xFF332200),
+    recordButtonBgColor = Color(0xFFFF003C),
+    waveFormBgColor = Color(0x33FFFFFF),
+    modelInfoIconColor = Color(0xFF00F0FF),
+    warningContainerColor = Color(0xFF4A4A00),
     warningTextColor = Color(0xFFFFCC00),
-    errorContainerColor = Color(0xFF330000),
+    errorContainerColor = Color(0xFF4A0000),
     errorTextColor = Color(0xFFFF0000),
-    newFeatureContainerColor = Color(0xFF9D00FF),
-    newFeatureTextColor = Color(0xFFFFFFFF),
-    bgStarColor = Color(0x1A00F5FF),
-    promoBannerBgBrush = Brush.verticalGradient(listOf(Color(0xFF000000), Color(0xFF1A000A))),
-    promoBannerIconBgBrush = Brush.linearGradient(listOf(Color(0xFFFF006E), Color(0xFF00F5FF))),
+    newFeatureContainerColor = Color(0xFFFF003C),
+    newFeatureTextColor = Color(0xFF000000),
+    bgStarColor = Color(0x33FF003C),
+    promoBannerBgBrush = Brush.verticalGradient(listOf(Color(0xFF000000), Color(0xFF110000))),
+    promoBannerIconBgBrush = Brush.linearGradient(listOf(Color(0xFF00F0FF), Color(0xFFFF003C))),
   )
 
-val darkCustomColors =
-  CustomColors(
-    appTitleGradientColors = listOf(Color(0xFFFF006E), Color(0xFF00F5FF)),
-    tabHeaderBgColor = Color(0xFF9D00FF),
-    taskCardBgColor = Color(0xFF0A0A0A),
-    taskBgColors =
-      listOf(
-        Color(0xFF1A000A),
-        Color(0xFF001A1A),
-        Color(0xFF0A001A),
-        Color(0xFF001A05),
-      ),
-    taskBgGradientColors =
-      listOf(
-        listOf(Color(0xFFFF006E), Color(0xFF800037)),
-        listOf(Color(0xFF00F5FF), Color(0xFF007A80)),
-        listOf(Color(0xFF9D00FF), Color(0xFF4E0080)),
-        listOf(Color(0xFF00FF41), Color(0xFF008020)),
-      ),
-    taskIconColors =
-      listOf(
-        Color(0xFFFF006E),
-        Color(0xFF00F5FF),
-        Color(0xFF9D00FF),
-        Color(0xFF00FF41),
-      ),
-    taskIconShapeBgColor = Color(0xFF000000),
-    homeBottomGradient = listOf(Color(0x00000000), Color(0xFF000000)),
-    agentBubbleBgColor = Color(0xFF0D0D0D),
-    userBubbleBgColor = Color(0xFF001A1A),
-    linkColor = Color(0xFF00F5FF),
-    successColor = Color(0xFF00FF41),
-    recordButtonBgColor = Color(0xFFFF006E),
-    waveFormBgColor = Color(0xFF1A1A1A),
-    modelInfoIconColor = Color(0xFF00F5FF),
-    warningContainerColor = Color(0xFF1A1300),
-    warningTextColor = Color(0xFFFFCC00),
-    errorContainerColor = Color(0xFF1A0000),
-    errorTextColor = Color(0xFFFF0000),
-    newFeatureContainerColor = Color(0xFF9D00FF),
-    newFeatureTextColor = Color(0xFFFFFFFF),
-    bgStarColor = Color(0x1A00F5FF),
-    promoBannerBgBrush = Brush.verticalGradient(listOf(Color(0xFF000000), Color(0xFF0D0208))),
-    promoBannerIconBgBrush = Brush.linearGradient(listOf(Color(0xFFFF006E), Color(0xFF00F5FF))),
-  )
+val darkCustomColors = lightCustomColors
 
 val MaterialTheme.customColors: CustomColors
   @Composable @ReadOnlyComposable get() = LocalCustomColors.current
